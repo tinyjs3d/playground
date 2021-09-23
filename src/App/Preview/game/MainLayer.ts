@@ -15,13 +15,17 @@ export class MainLayer extends Tiny.Container {
   }
 
   async init() {
-    const resources: any = await this.loadResource();
-    const scene = this.option.scene ? resources.scene.gltf : resources.model.gltf;
-    this.setSky(scene);
-    this.setCamera(scene.descriptor);
-    this.setLights(scene);
-    const model = Tiny.three.Model.from(resources.model.gltf);
-    this.addChild(model);
+    // try {
+      const resources: any = await this.loadResource();
+      const scene = this.option.scene ? resources.scene.gltf : resources.model.gltf;
+      this.setSky(scene);
+      this.setCamera(scene.descriptor);
+      this.setLights(scene);
+      const model = Tiny.three.Model.from(resources.model.gltf);
+      this.addChild(model);
+    // } catch (ex) {
+    //   alert('模型渲染失败，请检查你输入的 gltf 链接');
+    // }
   }
 
   loadResource() {
@@ -29,18 +33,20 @@ export class MainLayer extends Tiny.Container {
     const loader = new Tiny.loaders.Loader();
     loader.add({
       name: "model",
-      url: `./model/${model}/${model}.gltf`,
+      url: model,
     });
     if (scene) {
       loader.add({
         name: 'scene',
-        url: `./model/${scene}/${scene}.gltf`,
+        url: scene
       });
     }
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       loader.load((_loader: any, resources: any) => {
         resolve(resources);
+      }).on('error', (ex) => {
+        reject(ex);
       });
     });
   }
