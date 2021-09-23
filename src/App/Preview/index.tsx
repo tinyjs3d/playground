@@ -150,7 +150,7 @@ export function Preview() {
           position.y * position.y +
           position.z * position.z
         );
-    }, 100);
+    }, 700);
   }, [destroyApp, setApp, gltfUrl]);
 
   useEffect(() => {
