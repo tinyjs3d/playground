@@ -15,7 +15,7 @@ export class MainLayer extends Tiny.Container {
   }
 
   async init() {
-    // try {
+    try {
       const resources: any = await this.loadResource();
       const scene = this.option.scene ? resources.scene.gltf : resources.model.gltf;
       this.setSky(scene);
@@ -23,9 +23,9 @@ export class MainLayer extends Tiny.Container {
       this.setLights(scene);
       const model = Tiny.three.Model.from(resources.model.gltf);
       this.addChild(model);
-    // } catch (ex) {
-    //   alert('模型渲染失败，请检查你输入的 gltf 链接');
-    // }
+    } catch (ex) {
+      alert('模型渲染失败，请检查你输入的 gltf 链接');
+    }
   }
 
   loadResource() {

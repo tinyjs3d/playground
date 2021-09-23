@@ -20,10 +20,7 @@ type UploadItem = {
 export function Preview() {
   const [app, setApp] = useState<Tiny.Application | null>(null);
   const [gltfUrl, setGltfUrl] = useState('');
-  // const [selectModel, setSelectModel] = useState('');
   const [previewRecords, setPreviewRecords] = useState<UploadItem[]>([]);
-  // const [loading, setLoading] = useState(false);
-  // const [list, setList] = useState([]);
 
   const getPreviewRecords =  useCallback(() => {
     try {
@@ -31,8 +28,6 @@ export function Preview() {
       setPreviewRecords(JSON.parse(recordsStr));
     } catch(ex) {}
   }, []);
-
-
 
   const addPreviewRecord = useCallback((url: string) => {
     const newPreviewRecords = [...previewRecords];
@@ -158,8 +153,6 @@ export function Preview() {
     }, 100);
   }, [destroyApp, setApp, gltfUrl]);
 
-
-
   useEffect(() => {
     getPreviewRecords();
   }, []);
@@ -194,7 +187,7 @@ export function Preview() {
           <Button onClick={() => previewRecord(record.url)}>预览</Button>
           <Button onClick={() => copy(record.url)}>复制模型链接</Button>
           <Button onClick={() => deletePreviewRecord(record)}>删除记录</Button>
-          <Button onClick={() => editName(record)}>修改名称</Button>
+          <Button onClick={() => editName(record)}>重命名</Button>
 
         </>
       );
