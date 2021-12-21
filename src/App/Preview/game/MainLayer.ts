@@ -30,7 +30,7 @@ export class MainLayer extends Tiny.Container {
   }
 
   _destroy() {
-    this.model.meshes.forEach((mesh: any) => mesh.destroy());
+    this?.model?.meshes.forEach((mesh: any) => mesh.destroy());
   }
   loadResource() {
     const { model } = this.option;
@@ -38,6 +38,10 @@ export class MainLayer extends Tiny.Container {
     loader.add({
       name: "model",
       url: model,
+      metadata: {
+        mimeType: 'model/gltf+json',
+      },
+      xhrType: Tiny?.loaders?.Resource?.XHR_RESPONSE_TYPE?.JSON,
     });
 
     loader.add({
