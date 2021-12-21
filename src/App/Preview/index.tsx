@@ -19,6 +19,7 @@ type UploadItem = {
 
 export function Preview() {
   const [app, setApp] = useState<Tiny.Application | null>(null);
+  const [mainLayer, setMainLayer] = useState<MainLayer | null>(null);
   const [gltfUrl, setGltfUrl] = useState('');
   const [previewRecords, setPreviewRecords] = useState<UploadItem[]>([]);
 
@@ -90,6 +91,9 @@ export function Preview() {
 
   const destroyApp = useCallback(() => {
     if (!app) return;
+    if (mainLayer) {
+      mainLayer._destroy();
+    }
     const parent = app.view.parentElement;
     // @ts-ignore
     Tiny.three.Camera.main = null;
@@ -134,7 +138,7 @@ export function Preview() {
         renderType: Tiny.RENDERER_TYPE.WEBGL,
         renderOptions: {
           antialias: true,
-          backgroundColor: 0x2a3145,
+          backgroundColor: 0x1e2020,
         },
       });
       Tiny.three.attach(_app);
@@ -143,13 +147,9 @@ export function Preview() {
       });
       _app.run(main);
       setApp(_app);
+      setMainLayer(main);
       const controller = new Tiny.three.CameraOrbitControl(_app.view);
-      const position = Tiny.three.Camera.main.position;
-      controller.distance = Math.sqrt(
-        position.x * position.x +
-          position.y * position.y +
-          position.z * position.z
-        );
+      controller.distance = 1.5;
     }, 700);
   }, [destroyApp, setApp, gltfUrl]);
 
