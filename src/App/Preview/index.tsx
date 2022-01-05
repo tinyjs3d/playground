@@ -39,7 +39,7 @@ export function Preview() {
       previewTime: new Date().toLocaleString()
     });
     setPreviewRecords(newPreviewRecords);
-    localStorage.setItem('gltfPreviewRecords', JSON.stringify(newPreviewRecords));
+    localStorage.setItem('gltfPreviewRecords', JSON.stringify(newPreviewRecords.slice(0, 9)));
   }, [previewRecords]);
 
   const deletePreviewRecord = useCallback((record: UploadItem) => {
