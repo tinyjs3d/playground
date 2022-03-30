@@ -58,6 +58,55 @@ export class MainLayer extends Tiny.Container {
       });
     });
   }
+  setIBL(data: Three.glTFAsset) {
+    if (
+      data.descriptor.extensions
+      && data.descriptor.extensions.EXT_lights_image_based
+      && data.descriptor.extensions.EXT_lights_image_based.lights) {
+      const skyData = data.descriptor.extensions.EXT_lights_image_based.lights[0];
+      const imageData = data.images;
+      const irradianceCoefficients = [];
+      for (let i = 0; i < skyData.irradianceCoefficients.length; i += 3) {
+        const v1 = skyData.irradianceCoefficients[i];
+        const v2 = skyData.irradianceCoefficients[i + 1];
+        const v3 = skyData.irradianceCoefficients[i + 2];
+        irradianceCoefficients.push([v1, v2, v3]);
+      }
+
+      const diffuseCubeMaps = [];
+      const specularCubeMaps = [];
+      const faceFlags = ['POSITIVE_X', 'NEGATIVE_X', 'POSITIVE_Y', 'NEGATIVE_Y', 'NEGATIVE_Z', 'POSITIVE_Z'];
+      for (let i = 0; i < faceFlags.length; i++) {
+        const textureField = `TEXTURE_CUBE_MAP_${faceFlags[i]}`;
+        const diffuseImages = [];
+        const specularImages = [];
+        for (let j = 0; j < skyData.specularImages.length; j++) {
+          const image = imageData[skyData.specularImages[j][i]];
+          if (j === skyData.specularImages.length - 1) { diffuseImages.push(image); }
+          specularImages.push(image);
+        }
+        // @ts-ignore
+        diffuseCubeMaps.push(new Tiny.three.MipmapResource(diffuseImages, Tiny.three.TARGETS[textureField]));
+        // @ts-ignore
+        specularCubeMaps.push(new Tiny.three.MipmapResource(specularImages, Tiny.three.TARGETS[textureField]));
+      }
+
+      const specularCubeMipmapResource = new Tiny.three.CubeMipmapResource(specularCubeMaps, skyData.specularImages.length);
+      const specularCubeMipmapTexture = new Tiny.three.CubeMipmapTexture(specularCubeMipmapResource);
+
+      const imageBasedLighting = new Tiny.three.ImageBasedLighting({
+        // diffuse: diffuseCubeMipmapTexture,
+        specular: specularCubeMipmapTexture,
+        // @ts-ignore
+        irradianceCoefficients,
+        intensity: 3, // skyData.intensity
+      });
+
+      Tiny.three.LightingEnvironment.main.imageBasedLighting = imageBasedLighting;
+
+      // this.addChild(new Tiny3d.Skybox(specularCubeMipmapTexture));
+    }
+  }
 
   setEnvironmentLight(data: Three.glTFAsset) {
     if (data?.descriptor?.extensions?.EXT_lights_image_based.lights) {
